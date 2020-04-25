@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Enderlook.Extensions
 {
-    public static class ReflectionExtesions
+    public static class ReflectionExtensions
     {
         /// <summary>
         /// Returns the value of the first member of <see cref="obj"/> which:
@@ -20,7 +20,7 @@ namespace Enderlook.Extensions
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="obj">Object to look for <see cref="MemberInfo"/> and results.</param>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
-        /// <returns>Result of the first <see cref="MemberInfo"/> of <see cref="ojb"/> in match the criteria.</returns>
+        /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="obj"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="obj"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="obj"/>.</exception>
@@ -45,7 +45,7 @@ namespace Enderlook.Extensions
         }
 
         /// <summary>
-        /// Returns the first member of <see cref="obj"/> which:
+        /// Returns the first member of <paramref name="type"/> which:
         /// <list type="bullet">
         ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be <typeparamref name="T"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
         ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be <typeparamref name="T"/> and it must have a setter.</description></item>
@@ -56,11 +56,11 @@ namespace Enderlook.Extensions
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="type">Type to look for <see cref="MemberInfo"/> and results.</param>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
-        /// <returns>Result of the first <see cref="MemberInfo"/> of <see cref="ojb"/> in match the criteria.</returns>
+        /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="type"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
-        /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="obj"/>.</exception>
-        /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="obj"/> matched the necessary requirements.</exception>
+        /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="type"/>.</exception>
+        /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="type"/> matched the necessary requirements.</exception>
         public static MemberInfo GetFirstMemberInfoInMatchReturn<T>(Type type, string memberName)
         {
             if (type is null) throw new ArgumentNullException(nameof(type));
@@ -102,7 +102,7 @@ namespace Enderlook.Extensions
         }
 
         /// <summary>
-        /// Returns the first member of <see cref="obj"/> which:
+        /// Returns the first member of <paramref name="memberName"/> which:
         /// <list type="bullet">
         ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be <typeparamref name="T"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
         ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be <typeparamref name="T"/> and it must have a setter.</description></item>
@@ -113,11 +113,11 @@ namespace Enderlook.Extensions
         /// <typeparam name="T">Type to look for <see cref="MemberInfo"/> and results.</typeparam>
         /// <typeparam name="U">Result type.</typeparam>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
-        /// <returns>Result of the first <see cref="MemberInfo"/> of <see cref="ojb"/> in match the criteria.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
+        /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="memberName"/> in match the criteria.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="memberName"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
-        /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="obj"/>.</exception>
-        /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="obj"/> matched the necessary requirements.</exception>
+        /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="memberName"/>.</exception>
+        /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="memberName"/> matched the necessary requirements.</exception>
         public static MemberInfo GetFirstMemberInfoInMatchReturn<T, U>(string memberName) => GetFirstMemberInfoInMatchReturn<U>(typeof(T), memberName);
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Enderlook.Extensions
         /// </summary>
         /// <param name="methodInfo">Method to check.</param>
         /// <returns>Whenever it only has optional or params parameters.</returns>
-        /// <see cref="https://stackoverflow.com/a/627668/7655838"/>
+        /// <see url="https://stackoverflow.com/a/627668/7655838"/>
         public static bool HasNoMandatoryParameters(this MethodInfo methodInfo)
         {
             if (methodInfo is null) throw new ArgumentNullException(nameof(methodInfo));
@@ -154,7 +154,7 @@ namespace Enderlook.Extensions
         /// <param name="methodInfo">Method to check.</param>
         /// <param name="parameters">Array with default parameters to invoke.</param>
         /// <returns>Whenever it only has optional or params parameters.</returns>
-        /// <see cref="https://stackoverflow.com/a/627668/7655838"/>
+        /// <see url="https://stackoverflow.com/a/627668/7655838"/>
         public static bool HasNoMandatoryParameters(this MethodInfo methodInfo, out object[] parameters)
         {
             if (methodInfo is null) throw new ArgumentNullException(nameof(methodInfo));
