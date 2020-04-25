@@ -10,7 +10,7 @@ namespace Enderlook.Extensions
     public static class ReflectionExtensions
     {
         /// <summary>
-        /// Returns the value of the first member of <see cref="obj"/> which:
+        /// Returns the value of the first member of <paramref name="obj"/> which:
         /// <list type="bullet">
         ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be <typeparamref name="T"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
         ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be <typeparamref name="T"/> and it must have a setter.</description></item>
