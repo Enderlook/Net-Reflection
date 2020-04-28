@@ -5,6 +5,9 @@ using System.Reflection;
 
 namespace Enderlook.Extensions
 {
+    /// <summary>
+    /// Extension methods for <see cref="Assembly"/>.
+    /// </summary>
     public static class AssemblyExtensions
     {
         /// <summary>
