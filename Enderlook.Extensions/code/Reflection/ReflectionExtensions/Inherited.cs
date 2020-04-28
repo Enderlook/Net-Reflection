@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Enderlook.Extensions
 {
-    public static class ReflectionInheritedExtensions
+    public static partial class ReflectionExtensions
     {
         private static T GetInheritedStuff<T>(this Type source, Func<Type, T> Get) where T : MemberInfo
         {

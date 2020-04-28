@@ -7,7 +7,10 @@ using System.Reflection;
 
 namespace Enderlook.Extensions
 {
-    public static class ReflectionExtensions
+    /// <summary>
+    /// Extension methods for <see cref="MemberInfo"/> related works.
+    /// </summary>
+    public static partial class ReflectionExtensions
     {
         /// <summary>
         /// Returns the value of the first member of <paramref name="obj"/> which:
