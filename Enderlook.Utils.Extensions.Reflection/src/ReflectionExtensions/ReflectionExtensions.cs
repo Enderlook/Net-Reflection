@@ -94,13 +94,14 @@ namespace Enderlook.Utils.Extensions
                         MethodInfo methodInfo = (MethodInfo)memberInfo;
                         if (methodInfo.ReturnType == typeof(T))
                         {
-                            // Check if the method doesn't require any mandatory parameter
-                            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                            if (parameterInfos.Count(e => !e.IsOptional) == 0)
-                                return methodInfo;
+                            foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
+                                if (!parameterInfo.IsOptional)
+                                    goto error;
+                            return methodInfo;
                         }
                         break;
                 }
+            error:
             throw new MatchingMemberNotFoundException(memberName, type, typeof(T));
         }
 
