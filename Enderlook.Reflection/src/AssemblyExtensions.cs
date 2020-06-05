@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Enderlook.Utils.Extensions
+namespace Enderlook.Reflection
 {
     /// <summary>
     /// Extension methods for <see cref="Assembly"/>.

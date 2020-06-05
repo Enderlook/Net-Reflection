@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Enderlook.Utils.Extensions
+namespace Enderlook.Reflection
 {
     public static partial class ReflectionExtensions
     {

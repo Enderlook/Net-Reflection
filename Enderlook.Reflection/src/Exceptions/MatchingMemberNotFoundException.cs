@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Enderlook.Utils.Extensions
+namespace Enderlook.Reflection
 {
     /// <summary>
     /// Exception that is thrown when a member in a type doesn't have the property signature.

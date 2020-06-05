@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Enderlook.Utils.Extensions
+namespace Enderlook.Reflection
 {
     /// <summary>
     /// Exception that is thrown when a member is not found in an type.

@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <PackageId>Enderlook.Utils.Extensions.Utils.Reflection</PackageId>
-    <AssemblyName>Enderlook.Utils.Extensions.Utils.Reflection</AssemblyName>
-    <RootNamespace>Enderlook.Utils.Extensions.Utils.Reflection</RootNamespace>
+    <PackageId>Enderlook.Reflection</PackageId>
+    <AssemblyName>Enderlook.Reflection</AssemblyName>
+    <RootNamespace>Enderlook.Reflection</RootNamespace>
     <Authors>Enderlook</Authors>
-    <Product>Enderlook.Utils.Extensions.Utils.Reflection</Product>
+    <Product>Enderlook.Reflection</Product>
     <RepositoryUrl>https://github.com/Enderlook/Net-Utils</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Version>1.0.0</Version>
@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Enderlook.Exceptions" Version="1.0.0" />
     <PackageReference Include="Enderlook.NetStandard21to20Compatibility" Version="0.4.0" />
-    <PackageReference Include="Enderlook.Utils.Exceptions" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

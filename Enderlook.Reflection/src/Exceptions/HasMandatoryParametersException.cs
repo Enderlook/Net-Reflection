@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Enderlook.Utils.Extensions
+namespace Enderlook.Reflection
 {
     /// <summary>
     /// Exception that is thrown when a method does require mandatory parameters.
