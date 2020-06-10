@@ -6,7 +6,7 @@ namespace Enderlook.Reflection
 {
     public static partial class ReflectionExtensions
     {
-        private static T GetInheritedStuff<T>(this Type source, Func<Type, T> Get) where T : MemberInfo
+        private static T GetInheritedStuff<T>(this Type source, Func<Type, T> Get)
         {
             // https://stackoverflow.com/questions/6961781/reflecting-a-private-field-from-a-base-class
             T info;
@@ -16,7 +16,7 @@ namespace Enderlook.Reflection
             return info;
         }
 
-        private static IEnumerable<T> GetAllInheritedStuff<T>(this Type source, Func<Type, T> Get) where T : MemberInfo
+        private static IEnumerable<T> GetAllInheritedStuff<T>(this Type source, Func<Type, T> Get)
         {
             // https://stackoverflow.com/questions/6961781/reflecting-a-private-field-from-a-base-class
             do
@@ -63,6 +63,32 @@ namespace Enderlook.Reflection
             => source.GetInheritedStuff((type) => type.GetProperty(name, bindingFlags));
 
         /// <summary>
+        /// Get the property <paramref name="name"/> recursively through the inheritance hierarchy of <paramref name="source"/>.<br/>
+        /// Returns the first match.
+        /// </summary>
+        /// <param name="source">Initial <see cref="Type"/> used to get the property.</param>
+        /// <param name="name">Name of the property to get.</param>
+        /// <param name="bindingFlags"><see cref="BindingFlags"/> used to get the property.</param>
+        /// <returns>The first property which match the name <paramref name="name"/>.</returns>
+        public static MemberInfo[] GetInheritedMember(this Type source, string name, BindingFlags bindingFlags = BindingFlags.Default)
+            => source.GetInheritedStuff((type) => type.GetMember(name, bindingFlags));
+
+        /// <summary>
+        /// Get the methods <paramref name="name"/> recursively through the inheritance hierarchy of <paramref name="source"/>.<br/>
+        /// Return all the times it's declared.
+        /// </summary>
+        /// <param name="source">Initial <see cref="Type"/> used to get the method.</param>
+        /// <param name="name">Name of the field to get.</param>
+        /// <param name="bindingFlags"><see cref="BindingFlags"/> used to get the method.</param>
+        /// <returns>All the methods which match the name <paramref name="name"/>.</returns>
+        public static IEnumerable<MemberInfo> GetInheritedMembers(this Type source, string name, BindingFlags bindingFlags = BindingFlags.Default)
+        {
+            foreach (MemberInfo[] members in source.GetAllInheritedStuff((type) => type.GetMember(name, bindingFlags)))
+                foreach (MemberInfo member in members)
+                    yield return member;
+        }
+
+        /// <summary>
         /// Get the properties <paramref name="name"/> recursively through the inheritance hierarchy of <paramref name="source"/>.<br/>
         /// Return all the times it's declared.
         /// </summary>
@@ -106,6 +132,15 @@ namespace Enderlook.Reflection
             }
             while ((source = source.BaseType) is Type);
         }
+
+        /// <summary>
+        /// Get all the members recursively through the inheritance hierarchy of <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">Initial <see cref="Type"/> used to get the field.</param>
+        /// <param name="bindingFlags"><see cref="BindingFlags"/> used to get the field.</param>
+        /// <returns>The all the fields recursively through the inheritance hierarchy.</returns>
+        public static IEnumerable<MemberInfo> GetInheritedMembers(this Type source, BindingFlags bindingFlags = BindingFlags.Default)
+            => source.GetInheritedStuffs(e => e.GetMembers(bindingFlags | BindingFlags.DeclaredOnly));
 
         /// <summary>
         /// Get all the fields recursively through the inheritance hierarchy of <paramref name="source"/>.

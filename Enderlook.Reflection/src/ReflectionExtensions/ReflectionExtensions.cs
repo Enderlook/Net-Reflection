@@ -23,18 +23,19 @@ namespace Enderlook.Reflection
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="obj">Object to look for <see cref="MemberInfo"/> and results.</param>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
+        /// <param name="includeInheritedPrivates">Whenever it should also include private inherited members.</param>
         /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="obj"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="obj"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="obj"/>.</exception>
         /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="obj"/> matched the necessary requirements.</exception>
-        public static T GetValueFromFirstMember<T>(this object obj, string memberName)
+        public static T GetValueFromFirstMember<T>(this object obj, string memberName, bool includeInheritedPrivates = false)
         {
             if (obj is null) throw new ArgumentNullException(nameof(obj));
             if (memberName is null) throw new ArgumentNullException(nameof(memberName));
             else if (memberName.Length == 0) throw new ArgumentException("Can't be empty", nameof(memberName));
 
-            MemberInfo memberInfo = GetFirstMemberInfoInMatchReturn<T>(obj.GetType(), memberName);
+            MemberInfo memberInfo = GetFirstMemberInfoInMatchReturn<T>(obj.GetType(), memberName, includeInheritedPrivates);
 
             switch (memberInfo.MemberType)
             {
@@ -59,22 +60,25 @@ namespace Enderlook.Reflection
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="type">Type to look for <see cref="MemberInfo"/> and results.</param>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
+        /// <param name="includeInheritedPrivates">Whenever it should also include private inherited members.</param>
         /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="type"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="type"/>.</exception>
         /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="type"/> matched the necessary requirements.</exception>
-        public static MemberInfo GetFirstMemberInfoInMatchReturn<T>(Type type, string memberName)
+        public static MemberInfo GetFirstMemberInfoInMatchReturn<T>(Type type, string memberName, bool includeInheritedPrivates = false)
         {
             if (type is null) throw new ArgumentNullException(nameof(type));
             if (memberName is null) throw new ArgumentNullException(nameof(memberName));
             else if (memberName.Length == 0) throw new ArgumentException("Can't be empty", nameof(memberName));
 
-            MemberInfo[] memberInfos = type.GetMember(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.Static);
-            if (memberInfos.Length == 0)
-                throw new MemberNotFoundException(memberName, type);
-
+            const BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.Static;
+            IEnumerable<MemberInfo> memberInfos = includeInheritedPrivates ? type.GetInheritedMembers(memberName, bindingAttr)  : type.GetMember(memberName, bindingAttr) ;
+            
+            bool found = false;
             foreach (MemberInfo memberInfo in memberInfos)
+            {
+                found = true;
                 switch (memberInfo.MemberType)
                 {
                     case MemberTypes.Field:
@@ -101,6 +105,11 @@ namespace Enderlook.Reflection
                         }
                         break;
                 }
+            }
+
+            if (!found)
+                throw new MemberNotFoundException(memberName, type);
+
             error:
             throw new MatchingMemberNotFoundException(memberName, type, typeof(T));
         }
@@ -117,12 +126,13 @@ namespace Enderlook.Reflection
         /// <typeparam name="T">Type to look for <see cref="MemberInfo"/> and results.</typeparam>
         /// <typeparam name="U">Result type.</typeparam>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
+        /// <param name="includeInheritedPrivates">Whenever it should also include private inherited members.</param>
         /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="memberName"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="memberName"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="memberName"/>.</exception>
         /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="memberName"/> matched the necessary requirements.</exception>
-        public static MemberInfo GetFirstMemberInfoInMatchReturn<T, U>(string memberName) => GetFirstMemberInfoInMatchReturn<U>(typeof(T), memberName);
+        public static MemberInfo GetFirstMemberInfoInMatchReturn<T, U>(string memberName, bool includeInheritedPrivates = false) => GetFirstMemberInfoInMatchReturn<U>(typeof(T), memberName, includeInheritedPrivates);
 
         /// <summary>
         /// Invokes <paramref name="methodInfo"/> using <paramref name="obj"/> has it class instance and without any parameter (expect optionals).
