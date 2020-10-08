@@ -12,6 +12,11 @@ namespace Enderlook.Reflection
     /// </summary>
     public static partial class ReflectionExtensions
     {
+        /// <inheritdoc cref="GetValueFromFirstMember(object, string, Type, bool)"/>
+        /// <typeparam name="T">Result type.</typeparam>
+        public static T GetValueFromFirstMember<T>(this object obj, string memberName, bool includeInheritedPrivates = false)
+            => (T)obj.GetValueFromFirstMember(memberName, typeof(T), includeInheritedPrivates);
+
         /// <summary>
         /// Returns the value of the first member of <paramref name="obj"/> which:
         /// <list type="bullet">
@@ -20,33 +25,38 @@ namespace Enderlook.Reflection
         ///     <item><description>If <see cref="FieldInfo"/>, its <see cref="FieldInfo.FieldType"/> must be <typeparamref name="T"/>.</description></item>
         /// </list>
         /// </summary>
-        /// <typeparam name="T">Result type.</typeparam>
         /// <param name="obj">Object to look for <see cref="MemberInfo"/> and results.</param>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
+        /// <param name="memberType">Result type.</param>
         /// <param name="includeInheritedPrivates">Whenever it should also include private inherited members.</param>
         /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="obj"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="obj"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="obj"/>.</exception>
         /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="obj"/> matched the necessary requirements.</exception>
-        public static T GetValueFromFirstMember<T>(this object obj, string memberName, bool includeInheritedPrivates = false)
+        public static object GetValueFromFirstMember(this object obj, string memberName, Type memberType, bool includeInheritedPrivates = false)
         {
             if (obj is null) throw new ArgumentNullException(nameof(obj));
             if (memberName is null) throw new ArgumentNullException(nameof(memberName));
             else if (memberName.Length == 0) throw new ArgumentException("Can't be empty", nameof(memberName));
 
-            MemberInfo memberInfo = GetFirstMemberInfoInMatchReturn<T>(obj.GetType(), memberName, includeInheritedPrivates);
+            MemberInfo memberInfo = GetFirstMemberInfoInMatchReturn(obj.GetType(), memberName, memberType, includeInheritedPrivates);
 
             switch (memberInfo.MemberType)
             {
                 case MemberTypes.Field:
-                    return (T)((FieldInfo)memberInfo).GetValue(obj);
+                    return ((FieldInfo)memberInfo).GetValue(obj);
                 case MemberTypes.Method:
-                    return (T)((MethodInfo)memberInfo).Invoke(obj);
+                    return ((MethodInfo)memberInfo).Invoke(obj);
                 default:
                     throw new ImpossibleStateException();
             }
         }
+
+        /// <inheritdoc cref="GetFirstMemberInfoInMatchReturn(Type, string, Type, bool)"/>
+        /// <typeparam name="T">Result type.</typeparam>
+        public static MemberInfo GetFirstMemberInfoInMatchReturn<T>(this Type type, string memberName, bool includeInheritedPrivates = false)
+            => type.GetFirstMemberInfoInMatchReturn(memberName, typeof(T), includeInheritedPrivates);
 
         /// <summary>
         /// Returns the first member of <paramref name="type"/> which:
@@ -57,24 +67,24 @@ namespace Enderlook.Reflection
         /// </list>
         /// <see cref="PropertyInfo"/> are always returned as <see cref="MethodInfo"/> because it returns their getter.
         /// </summary>
-        /// <typeparam name="T">Result type.</typeparam>
         /// <param name="type">Type to look for <see cref="MemberInfo"/> and results.</param>
         /// <param name="memberName">Name of the <see cref="MemberInfo"/> looked for.</param>
+        /// <param name="memberType">Result type.</param>
         /// <param name="includeInheritedPrivates">Whenever it should also include private inherited members.</param>
         /// <returns>Result of the first <see cref="MemberInfo"/> of <paramref name="type"/> in match the criteria.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="memberName"/> are <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="type"/>.</exception>
         /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="type"/> matched the necessary requirements.</exception>
-        public static MemberInfo GetFirstMemberInfoInMatchReturn<T>(Type type, string memberName, bool includeInheritedPrivates = false)
+        public static MemberInfo GetFirstMemberInfoInMatchReturn(this Type type, string memberName, Type memberType, bool includeInheritedPrivates = false)
         {
             if (type is null) throw new ArgumentNullException(nameof(type));
             if (memberName is null) throw new ArgumentNullException(nameof(memberName));
             else if (memberName.Length == 0) throw new ArgumentException("Can't be empty", nameof(memberName));
 
             const BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.Static;
-            IEnumerable<MemberInfo> memberInfos = includeInheritedPrivates ? type.GetInheritedMembers(memberName, bindingAttr)  : type.GetMember(memberName, bindingAttr) ;
-            
+            IEnumerable<MemberInfo> memberInfos = includeInheritedPrivates ? type.GetInheritedMembers(memberName, bindingAttr) : type.GetMember(memberName, bindingAttr);
+
             bool found = false;
             foreach (MemberInfo memberInfo in memberInfos)
             {
@@ -83,7 +93,7 @@ namespace Enderlook.Reflection
                 {
                     case MemberTypes.Field:
                         FieldInfo fieldInfo = (FieldInfo)memberInfo;
-                        if (fieldInfo.FieldType == typeof(T))
+                        if (fieldInfo.FieldType == memberType)
                             return fieldInfo;
                         break;
                     case MemberTypes.Property:
@@ -91,12 +101,12 @@ namespace Enderlook.Reflection
                         if (propertyInfo.CanRead)
                             foreach (MethodInfo accessor in propertyInfo.GetAccessors(true))
                                 // Check if it is a getter (has return type) and is the type we are looking for
-                                if (accessor.ReturnType == typeof(T))
+                                if (accessor.ReturnType == memberType)
                                     return accessor;
                         break;
                     case MemberTypes.Method:
                         MethodInfo methodInfo = (MethodInfo)memberInfo;
-                        if (methodInfo.ReturnType == typeof(T))
+                        if (methodInfo.ReturnType == memberType)
                         {
                             foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
                                 if (!parameterInfo.IsOptional)
@@ -111,7 +121,7 @@ namespace Enderlook.Reflection
                 throw new MemberNotFoundException(memberName, type);
 
             error:
-            throw new MatchingMemberNotFoundException(memberName, type, typeof(T));
+            throw new MatchingMemberNotFoundException(memberName, type, memberType);
         }
 
         /// <summary>
