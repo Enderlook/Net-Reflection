@@ -142,7 +142,7 @@ namespace Enderlook.Reflection
         /// <exception cref="ArgumentException">Thrown when <paramref name="memberName"/> is empty.</exception>
         /// <exception cref="MemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> could be found in <paramref name="memberName"/>.</exception>
         /// <exception cref="MatchingMemberNotFoundException">Thrown no <see cref="MemberInfo"/> with name <paramref name="memberName"/> in <paramref name="memberName"/> matched the necessary requirements.</exception>
-        public static MemberInfo GetFirstMemberInfoInMatchReturn<T, U>(string memberName, bool includeInheritedPrivates = false) => GetFirstMemberInfoInMatchReturn<U>(typeof(T), memberName, includeInheritedPrivates);
+        public static MemberInfo GetFirstMemberInfoInMatchReturn<T, U>(this string memberName, bool includeInheritedPrivates = false) => GetFirstMemberInfoInMatchReturn<U>(typeof(T), memberName, includeInheritedPrivates);
 
         /// <summary>
         /// Invokes <paramref name="methodInfo"/> using <paramref name="obj"/> has it class instance and without any parameter (expect optionals).
