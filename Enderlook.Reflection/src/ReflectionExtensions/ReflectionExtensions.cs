@@ -1,7 +1,6 @@
-﻿using Enderlook.Exceptions;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -49,7 +48,8 @@ namespace Enderlook.Reflection
                 case MemberTypes.Method:
                     return ((MethodInfo)memberInfo).Invoke(obj);
                 default:
-                    throw new ImpossibleStateException();
+                    Debug.Fail("Impossible state.");
+                    return null;
             }
         }
 
