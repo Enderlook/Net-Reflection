@@ -8,7 +8,7 @@
     <RootNamespace>Enderlook.Reflection</RootNamespace>
     <Authors>Enderlook</Authors>
     <Product>Enderlook.Reflection</Product>
-    <RepositoryUrl>https://github.com/Enderlook/Net-Utils</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Enderlook/Net-Reflection</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Version>1.2.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
