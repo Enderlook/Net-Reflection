@@ -19,9 +19,9 @@ namespace Enderlook.Reflection
         /// <summary>
         /// Returns the value of the first member of <paramref name="obj"/> which:
         /// <list type="bullet">
-        ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be <typeparamref name="T"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
-        ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be <typeparamref name="T"/> and it must have a setter.</description></item>
-        ///     <item><description>If <see cref="FieldInfo"/>, its <see cref="FieldInfo.FieldType"/> must be <typeparamref name="T"/>.</description></item>
+        ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be of type <paramref name="memberType"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
+        ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be of type <paramref name="memberType"/> and it must have a getter.</description></item>
+        ///     <item><description>If <see cref="FieldInfo"/>, its <see cref="FieldInfo.FieldType"/> must be of type <paramref name="memberType"/>.</description></item>
         /// </list>
         /// </summary>
         /// <param name="obj">Object to look for <see cref="MemberInfo"/> and results.</param>
@@ -43,6 +43,7 @@ namespace Enderlook.Reflection
 
             switch (memberInfo.MemberType)
             {
+                // We don't check for Properties because they are already returned as methods in GetFirstMemberInfoInMatchReturn
                 case MemberTypes.Field:
                     return ((FieldInfo)memberInfo).GetValue(obj);
                 case MemberTypes.Method:
@@ -61,9 +62,9 @@ namespace Enderlook.Reflection
         /// <summary>
         /// Returns the first member of <paramref name="type"/> which:
         /// <list type="bullet">
-        ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be <typeparamref name="T"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
-        ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be <typeparamref name="T"/> and it must have a setter.</description></item>
-        ///     <item><description>If <see cref="FieldInfo"/>, its <see cref="FieldInfo.FieldType"/> must be <typeparamref name="T"/>.</description></item>
+        ///     <item><description>If <see cref="MethodInfo"/>, its <see cref="MethodInfo.ReturnType"/> must be of type <paramref name="memberType"/> and it must not require mandatory parameters (can have optionals or params).</description></item>
+        ///     <item><description>If <see cref="PropertyInfo"/>, its <see cref="PropertyInfo.PropertyType"/> must be of type <paramref name="memberType"/> and it must have a setter.</description></item>
+        ///     <item><description>If <see cref="FieldInfo"/>, its <see cref="FieldInfo.FieldType"/> must be of type <paramref name="memberType"/>.</description></item>
         /// </list>
         /// <see cref="PropertyInfo"/> are always returned as <see cref="MethodInfo"/> because it returns their getter.
         /// </summary>
