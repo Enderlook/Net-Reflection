@@ -146,7 +146,7 @@ namespace Enderlook.Reflection
         public static MemberInfo GetFirstMemberInfoInMatchReturn<T, U>(this string memberName, bool includeInheritedPrivates = false) => GetFirstMemberInfoInMatchReturn<U>(typeof(T), memberName, includeInheritedPrivates);
 
         /// <summary>
-        /// Invokes <paramref name="methodInfo"/> using <paramref name="obj"/> has it class instance and without any parameter (expect optionals).
+        /// Invokes <paramref name="methodInfo"/> using <paramref name="obj"/> as its class instance and without any parameter (expect optionals).
         /// </summary>
         /// <param name="methodInfo">Method to invoke.</param>
         /// <param name="obj">Instance of the class to invoke.</param>
